@@ -13,14 +13,12 @@ public class ExpandableCircleView extends View {
 
     private static final int DEFAULT_OUTER_COLOR = Color.BLACK;
     private static final int DEFAULT_INNER_COLOR = Color.BLUE;
-    private static final int DEFAULT_HEIGHT = 200;
-    private static final int DEFAULT_WIDTH = 200;
     private static final int DEFAULT_EXPAND_ANIMATION_DURATION = 100;
-    private static final float DEFAULT_PROGRESS = 0.5f;
+    private static final float DEFAULT_INNER_CIRCLE_PROPORTION = 0.5f;
 
     private int mOuterColor = DEFAULT_OUTER_COLOR;
     private int mInnerColor = DEFAULT_INNER_COLOR;
-    private float mProgress = 0;
+    private float mProportion = 0;
     private Paint mOuterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mInnerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private ObjectAnimator mExpandAnimator;
@@ -48,7 +46,8 @@ public class ExpandableCircleView extends View {
                     DEFAULT_OUTER_COLOR);
             mInnerColor = a.getColor(R.styleable.ExpandableCircleView_innerColor,
                     DEFAULT_INNER_COLOR);
-            mProgress = a.getFloat(R.styleable.ExpandableCircleView_progress, DEFAULT_PROGRESS);
+            mProportion = a.getFloat(R.styleable.ExpandableCircleView_proportion,
+                    DEFAULT_INNER_CIRCLE_PROPORTION);
         } finally {
             a.recycle();
         }
@@ -61,25 +60,12 @@ public class ExpandableCircleView extends View {
         mOuterPaint.setStyle(Paint.Style.STROKE);
         mInnerPaint.setColor(mInnerColor);
 
-        mExpandAnimator = ObjectAnimator.ofFloat(this, "Progress", 0);
+        mExpandAnimator = ObjectAnimator.ofFloat(this, "Proportion", 0);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-
-        if (widthMode == MeasureSpec.AT_MOST && heightMode == MeasureSpec.AT_MOST) {
-            setMeasuredDimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        } else if (widthMode == MeasureSpec.AT_MOST) {
-            setMeasuredDimension(heightSize, heightSize);
-        } else if (heightMode == MeasureSpec.AT_MOST) {
-            setMeasuredDimension(widthSize, widthSize);
-        }
     }
 
     @Override
@@ -99,47 +85,54 @@ public class ExpandableCircleView extends View {
         float cy = paddingTop + borderRadius;
 
         canvas.drawCircle(cx, cy, borderRadius, mOuterPaint);
-        canvas.drawCircle(cx, cy, borderRadius * mProgress, mInnerPaint);
+        canvas.drawCircle(cx, cy, borderRadius * mProportion, mInnerPaint);
     }
 
     /**
      * Expand inner circle with animation.
-     * @param progress proportion of the inner circle to expand.
+     *
+     * @param proportion the proportion of the inner circle to expand
      */
-    public void expand(float progress) {
+    public void expand(float proportion) {
         if (mExpandAnimator.isRunning()) {
             mExpandAnimator.cancel();
         }
-        mExpandAnimator.setFloatValues(progress);
+        mExpandAnimator.setFloatValues(proportion);
         mExpandAnimator.setDuration(DEFAULT_EXPAND_ANIMATION_DURATION).start();
     }
 
     /**
-     * Get current expand progress.
+     * Gets the proportion of the inner circle.
+     *
+     * @return the proportion of the inner circle
      */
-    public float getProgress() {
-        return mProgress;
+    public float getProportion() {
+        return mProportion;
     }
 
     /**
-     * Expand inner circle without animation.
-     * @param progress proportion of the inner circle to expand.
+     * Expands inner circle to specific proportion without animation.
+     *
+     * @param proportion the proportion of the inner circle to expand
      */
-    public void setProgress(float progress) {
-        mProgress = progress;
+    public void setProportion(float proportion) {
+        mProportion = proportion;
         invalidate();
     }
 
     /**
-     * Get the color of outer circle.
+     * Gets the color of outer circle.
+     *
+     * @return the color of the outer circle
      */
     public int getOuterColor() {
         return mOuterColor;
     }
 
     /**
-     * Set the color of outer circle.
-     * @param color color of outer circle.
+     * Changes the color of outer circle.
+     *
+     * @param color the color of the outer circle.
      */
     public void setOuterColor(int color) {
         mOuterColor = color;
@@ -148,14 +141,17 @@ public class ExpandableCircleView extends View {
 
     /**
      * Get the color of inner circle.
+     *
+     * @return the color of the inner circle
      */
     public int getInnerColor() {
         return mOuterColor;
     }
 
     /**
-     * Set the color of inner circle.
-     * @param color color of inner circle.
+     * Changes the color of inner circle.
+     *
+     * @param color the color of the inner circle.
      */
     public void setInnerColor(int color) {
         mInnerColor = color;

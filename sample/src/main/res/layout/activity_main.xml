@@ -21,9 +21,8 @@
     <com.nex3z.expandablecircleview.ExpandableCircleView
         android:id="@+id/circle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="32dp"
-        app:innerColor="@color/colorPrimary"
-        />
+        app:innerColor="@color/colorPrimary" />
 
 </LinearLayout>
