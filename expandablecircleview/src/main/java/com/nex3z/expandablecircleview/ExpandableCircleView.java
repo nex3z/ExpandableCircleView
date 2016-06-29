@@ -18,6 +18,7 @@ public class ExpandableCircleView extends View {
 
     private int mOuterColor = DEFAULT_OUTER_COLOR;
     private int mInnerColor = DEFAULT_INNER_COLOR;
+    private int mExpandAnimationDuration = DEFAULT_EXPAND_ANIMATION_DURATION;
     private float mProportion = 0;
     private Paint mOuterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mInnerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -48,6 +49,9 @@ public class ExpandableCircleView extends View {
                     DEFAULT_INNER_COLOR);
             mProportion = a.getFloat(R.styleable.ExpandableCircleView_proportion,
                     DEFAULT_INNER_CIRCLE_PROPORTION);
+            mExpandAnimationDuration = a.getInt(
+                    R.styleable.ExpandableCircleView_expandAnimationDuration,
+                    DEFAULT_EXPAND_ANIMATION_DURATION);
         } finally {
             a.recycle();
         }
@@ -98,7 +102,7 @@ public class ExpandableCircleView extends View {
             mExpandAnimator.cancel();
         }
         mExpandAnimator.setFloatValues(proportion);
-        mExpandAnimator.setDuration(DEFAULT_EXPAND_ANIMATION_DURATION).start();
+        mExpandAnimator.setDuration(mExpandAnimationDuration).start();
     }
 
     /**
@@ -156,6 +160,24 @@ public class ExpandableCircleView extends View {
     public void setInnerColor(int color) {
         mInnerColor = color;
         mInnerPaint.setColor(mInnerColor);
+    }
+
+    /**
+     * Get the animation duration in millisecond for the inner circle to expand.
+     *
+     * @return the animation duration in millisecond for the inner circle to expand.
+     */
+    public int getExpandAnimationDuration() {
+        return mExpandAnimationDuration;
+    }
+
+    /**
+     * Changes the animation duration in millisecond for the inner circle to expand.
+     *
+     * @param duration the animation duration in millisecond for the inner circle to expand.
+     */
+    public void setExpandAnimationDuration(int duration) {
+        mExpandAnimationDuration = duration;
     }
 
 }
