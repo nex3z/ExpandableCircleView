@@ -6,15 +6,24 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 public class ExpandableCircleView extends View {
 
     private static final int DEFAULT_OUTER_COLOR = Color.BLACK;
     private static final int DEFAULT_INNER_COLOR = Color.BLUE;
+    private static final int DEFAULT_HEIGHT = 200;
+    private static final int DEFAULT_WIDTH = 200;
     private static final int DEFAULT_EXPAND_ANIMATION_DURATION = 100;
     private static final float DEFAULT_INNER_CIRCLE_PROPORTION = 0.5f;
+
+    private static final String SUPER_STATE_KEY = "super_state";
+    private static final String OUTER_COLOR_KEY = "outer_color";
+    private static final String INNER_COLOR_KEY = "inner_color";
 
     private int mOuterColor = DEFAULT_OUTER_COLOR;
     private int mInnerColor = DEFAULT_INNER_COLOR;
@@ -70,6 +79,21 @@ public class ExpandableCircleView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+        if (widthMode == MeasureSpec.AT_MOST && heightMode == MeasureSpec.AT_MOST) {
+            setMeasuredDimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        } else if (widthMode == MeasureSpec.AT_MOST) {
+            widthSize = widthSize > heightSize ? heightSize : widthSize;
+            setMeasuredDimension(widthSize, heightSize);
+        } else if (heightMode == MeasureSpec.AT_MOST) {
+            heightSize = heightSize > widthSize ? widthSize : heightSize;
+            setMeasuredDimension(widthSize, heightSize);
+        }
     }
 
     @Override
@@ -90,6 +114,29 @@ public class ExpandableCircleView extends View {
 
         canvas.drawCircle(cx, cy, borderRadius, mOuterPaint);
         canvas.drawCircle(cx, cy, borderRadius * mProportion, mInnerPaint);
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(SUPER_STATE_KEY, super.onSaveInstanceState());
+        bundle.putInt(OUTER_COLOR_KEY, mOuterColor);
+        bundle.putInt(INNER_COLOR_KEY, mInnerColor);
+        return bundle;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (state instanceof Bundle) {
+            Bundle bundle = (Bundle) state;
+            int outerColor = bundle.getInt(OUTER_COLOR_KEY);
+            setOuterColor(outerColor);
+            int innerColor = bundle.getInt(INNER_COLOR_KEY);
+            setInnerColor(innerColor);
+            state = bundle.getParcelable(SUPER_STATE_KEY);
+            invalidate();
+        }
+        super.onRestoreInstanceState(state);
     }
 
     /**

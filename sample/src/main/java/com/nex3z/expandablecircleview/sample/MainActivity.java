@@ -1,14 +1,19 @@
 package com.nex3z.expandablecircleview.sample;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 
 import com.nex3z.expandablecircleview.ExpandableCircleView;
+
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -17,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
+    final Random mRnd = new Random();
 
     private ExpandableCircleView mCircle;
 
@@ -26,6 +32,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
 
         mCircle = (ExpandableCircleView) findViewById(R.id.circle);
+
+        Button button = (Button) findViewById(R.id.btn_change_color);
+        if (button != null) {
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int outerColor = getRandomColor();
+                    mCircle.setOuterColor(outerColor);
+                    int innerColor = getRandomColor();
+                    mCircle.setInnerColor(innerColor);
+                }
+            });
+        }
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -58,6 +77,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this);
+    }
+
+    private int getRandomColor() {
+        return Color.argb(255, mRnd.nextInt(256), mRnd.nextInt(256), mRnd.nextInt(256));
     }
 
 }
