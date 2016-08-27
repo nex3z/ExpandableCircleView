@@ -9,7 +9,6 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 public class ExpandableCircleView extends View {
@@ -145,6 +144,10 @@ public class ExpandableCircleView extends View {
      * @param proportion the proportion of the inner circle to expand
      */
     public void expand(float proportion) {
+        if (proportion > 1) {
+            return;
+        }
+
         if (mExpandAnimator.isRunning()) {
             mExpandAnimator.cancel();
         }
