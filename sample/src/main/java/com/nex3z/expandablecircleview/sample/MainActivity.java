@@ -1,30 +1,27 @@
 package com.nex3z.expandablecircleview.sample;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
 import com.nex3z.expandablecircleview.ExpandableCircleView;
 
+import java.lang.ref.WeakReference;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+public class MainActivity extends AppCompatActivity {
 
-    private static final float MAX_FORCE = 4.0f;
-    private static final float ONE_G = 1.0f;
-
-    private SensorManager mSensorManager;
-    private Sensor mAccelerometer;
-    final Random mRnd = new Random();
+    private static final int EXPAND_DURATION = 500;
+    private static final int EVENT_EXPAND = 1;
 
     private ExpandableCircleView mCircle;
+    private boolean mExpand = true;
+    private boolean mAuto = true;
+    private Random mRnd = new Random();
+    private ExpandHandler mHandler = new ExpandHandler(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,55 +29,49 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
 
         mCircle = (ExpandableCircleView) findViewById(R.id.circle);
+        mCircle.setExpandAnimationDuration(EXPAND_DURATION);
+        mCircle.setProportion(0);
 
-        Button button = (Button) findViewById(R.id.btn_change_color);
-        if (button != null) {
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int outerColor = getRandomColor();
-                    mCircle.setOuterColor(outerColor);
-                    int innerColor = getRandomColor();
-                    mCircle.setInnerColor(innerColor);
-                }
-            });
+        mHandler.sendMessageDelayed(mHandler.obtainMessage(EVENT_EXPAND), EXPAND_DURATION);
+
+        Button button = (Button) findViewById(R.id.btn_change_size);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuto = false;
+                mCircle.expand(mRnd.nextFloat());
+            }
+        });
+    }
+
+    private static class ExpandHandler extends Handler {
+        private final WeakReference<MainActivity> mActivityRef;
+
+        public ExpandHandler(MainActivity activity) {
+            mActivityRef = new WeakReference<>(activity);
         }
 
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-    }
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case EVENT_EXPAND:
+                    MainActivity activity = mActivityRef.get();
+                    if (activity != null && activity.mAuto) {
+                        if (activity.mExpand) {
+                            activity.mCircle.expand(1);
+                        } else {
+                            activity.mCircle.expand(0);
+                        }
+                        activity.mExpand = !activity.mExpand;
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        float x = event.values[0];
-        float y = event.values[1];
-        float z = event.values[2];
-
-        float gX = x / SensorManager.GRAVITY_EARTH;
-        float gY = y / SensorManager.GRAVITY_EARTH;
-        float gZ = z / SensorManager.GRAVITY_EARTH;
-        float force = (float) Math.sqrt(gX * gX + gY * gY + gZ * gZ);
-
-        mCircle.expand((force - ONE_G)/MAX_FORCE);
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mSensorManager.unregisterListener(this);
-    }
-
-    private int getRandomColor() {
-        return Color.argb(255, mRnd.nextInt(256), mRnd.nextInt(256), mRnd.nextInt(256));
+                        activity.mHandler.sendMessageDelayed(
+                                activity.mHandler.obtainMessage(EVENT_EXPAND), EXPAND_DURATION);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
 }

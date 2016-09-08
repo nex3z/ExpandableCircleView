@@ -11,13 +11,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/shake_your_phone"
-        android:textSize="24sp"/>
-
     <com.nex3z.expandablecircleview.ExpandableCircleView
         android:id="@+id/circle"
         android:layout_width="match_parent"
@@ -36,10 +29,10 @@
         android:layout_weight="1">
 
         <Button
-            android:id="@+id/btn_change_color"
+            android:id="@+id/btn_change_size"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/change_color"/>
+            android:text="@string/random_expand"/>
 
     </LinearLayout>
 

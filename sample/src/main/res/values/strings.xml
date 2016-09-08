@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">ExpandableCircleView</string>
     <string name="shake_your_phone">Shake Your Phone</string>
-    <string name="change_color">Change Color</string>
+    <string name="random_expand">Random Expand</string>
 </resources>
