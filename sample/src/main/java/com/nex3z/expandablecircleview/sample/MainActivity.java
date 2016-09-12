@@ -30,16 +30,16 @@ public class MainActivity extends AppCompatActivity {
 
         mCircle = (ExpandableCircleView) findViewById(R.id.circle);
         mCircle.setExpandAnimationDuration(EXPAND_DURATION);
-        mCircle.setProportion(0);
+        mCircle.setProgress(0);
 
-        mHandler.sendMessageDelayed(mHandler.obtainMessage(EVENT_EXPAND), EXPAND_DURATION);
+         mHandler.sendMessageDelayed(mHandler.obtainMessage(EVENT_EXPAND), EXPAND_DURATION);
 
         Button button = (Button) findViewById(R.id.btn_change_size);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mAuto = false;
-                mCircle.expand(mRnd.nextFloat());
+                mCircle.setProgress(mRnd.nextInt(100), true);
             }
         });
     }
@@ -58,9 +58,9 @@ public class MainActivity extends AppCompatActivity {
                     MainActivity activity = mActivityRef.get();
                     if (activity != null && activity.mAuto) {
                         if (activity.mExpand) {
-                            activity.mCircle.expand(1);
+                            activity.mCircle.setProgress(100, true);
                         } else {
-                            activity.mCircle.expand(0);
+                            activity.mCircle.setProgress(0, true);
                         }
                         activity.mExpand = !activity.mExpand;
 

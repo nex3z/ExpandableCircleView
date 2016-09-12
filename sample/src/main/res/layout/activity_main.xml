@@ -20,7 +20,9 @@
         android:layout_marginBottom="16dp"
         android:layout_gravity="center"
         app:innerColor="@color/colorPrimary"
-        app:expandAnimationDuration="150"/>
+        app:showProgressText="true"
+        app:progressTextColor="@color/colorAccent"
+        app:progressTextSize="32sp"/>
 
     <LinearLayout
         android:orientation="vertical"
