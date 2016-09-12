@@ -22,7 +22,8 @@
         app:innerColor="@color/colorPrimary"
         app:showProgressText="true"
         app:progressTextColor="@color/colorAccent"
-        app:progressTextSize="32sp"/>
+        app:progressTextSize="32sp"
+        app:progressTextSuffix="%"/>
 
     <LinearLayout
         android:orientation="vertical"

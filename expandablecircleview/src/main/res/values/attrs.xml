@@ -10,5 +10,6 @@
         <attr name="showProgressText" format="boolean" />
         <attr name="progressTextSize" format="dimension"/>
         <attr name="progressTextColor" format="color"/>
+        <attr name="progressTextSuffix" format="string"/>
     </declare-styleable>
 </resources>

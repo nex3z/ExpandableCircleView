@@ -37,6 +37,7 @@ public class ExpandableCircleView extends View {
     private boolean mShowProgressText;
     private float mProgressTextSize;
     private int mProgressTextColor;
+    private String mProgressTextSuffix;
 
     private int mMax;
     private int mProgress = 0;
@@ -82,6 +83,7 @@ public class ExpandableCircleView extends View {
                     (int)dpToPx(DEFAULT_PROGRESS_TEXT_SIZE_DP));
             mProgressTextColor = a.getColor(R.styleable.ExpandableCircleView_progressTextColor,
                     DEFAULT_PROGRESS_TEXT_COLOR);
+            mProgressTextSuffix = a.getString(R.styleable.ExpandableCircleView_progressTextSuffix);
         } finally {
             a.recycle();
         }
@@ -143,6 +145,9 @@ public class ExpandableCircleView extends View {
 
         if (mShowProgressText) {
             String progress = String.valueOf(mProgress);
+            if (mProgressTextSuffix != null) {
+                progress += mProgressTextSuffix;
+            }
             mProgressTextPaint.getTextBounds(progress, 0, progress.length(), mProgressTextRect);
             canvas.drawText(progress, cx - mProgressTextRect.width() / 2,
                     cy + mProgressTextRect.height() / 2, mProgressTextPaint);
@@ -295,6 +300,26 @@ public class ExpandableCircleView extends View {
     }
 
     /**
+     * Gets the suffix string to be appended to the progress text. Default is null which appends
+     * nothing.
+     *
+     * @return the suffix string to be appended to the progress text
+     */
+    public String getProgressTextSuffix() {
+        return mProgressTextSuffix;
+    }
+
+    /**
+     * Sets the suffix string to be appended to the progress text.
+     *
+     * @param progressTextSuffix the suffix string to be appended to the progress text
+     */
+    public void setProgressTextSuffix(String progressTextSuffix) {
+        mProgressTextSuffix = progressTextSuffix;
+        invalidate();
+    }
+
+    /**
      * Gets the color of outer circle.
      *
      * @return the color of the outer circle
@@ -314,7 +339,7 @@ public class ExpandableCircleView extends View {
     }
 
     /**
-     * Get the color of inner circle.
+     * Gets the color of inner circle.
      *
      * @return the color of the inner circle
      */
