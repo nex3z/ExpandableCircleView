@@ -1,15 +1,16 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 30
         versionCode 1
-        versionName PUBLISH_VERSION
+        versionName "1.0"
     }
     buildTypes {
         release {
@@ -19,18 +20,65 @@ android {
     }
 }
 
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.4.0'
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.nex3z'
+                artifactId = 'expandable-circle-view'
+                version = '0.2.3'
+
+                artifact(sourceJar)
+
+                pom {
+                    name = 'expandable-circle-view'
+                    description = 'A circular progress indicator that expands or shrinks the inner circle to the given progress.'
+                    url = 'https://github.com/nex3z/ExpandableCircleView'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'nex3z'
+                            name = 'Tianxing Li'
+                            email = 'litianxing9@gmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/nex3z/ExpandableCircleView.git'
+                        developerConnection = 'scm:git:ssh://github.com/nex3z/ExpandableCircleView.git'
+                        url = 'https://github.com/nex3z/ExpandableCircleView'
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                url = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                credentials {
+                    username SONATYPE_NEXUS_USERNAME
+                    password SONATYPE_NEXUS_PASSWORD
+                }
+            }
+        }
+    }
+
+    signing {
+        sign publishing.publications.release
+    }
 }
 
-publish {
-    userOrg = USER_ORG
-    groupId = GROUP_ID
-    artifactId = ARTIFACT_ID
-    publishVersion = PUBLISH_VERSION
-    desc = DESC
-    website = WEBSITE
-    repository = REPOSIROTY
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.13.1'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
 }
